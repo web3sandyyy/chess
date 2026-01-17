@@ -1,5 +1,5 @@
 {
-  "name": "benne-bae",
+  "name": "chess",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,11 +12,17 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@tailwindcss/vite": "^4.1.18",
+    "chess.js": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "gsap": "^3.14.2",
     "lucide-react": "^0.562.0",
+    "rdndmb-html5-to-touch": "^9.0.0",
     "react": "^19.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-multi-backend": "^9.0.0",
+    "react-dnd-touch-backend": "^16.0.1",
     "react-dom": "^19.2.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18"

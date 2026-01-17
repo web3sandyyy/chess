@@ -1,10 +1,14 @@
-import "./App.css";
+import { DndProvider } from 'react-dnd';
+import { MultiBackend } from 'react-dnd-multi-backend';
+import { HTML5toTouch } from 'rdndmb-html5-to-touch';
+import Game from './components/chess/Game';
+import './App.css';
 
 function App() {
   return (
-    <div>
-      <p>Hello World</p>
-    </div>
+    <DndProvider backend={MultiBackend} options={HTML5toTouch}>
+        <Game />
+    </DndProvider>
   );
 }
 
