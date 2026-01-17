@@ -2,7 +2,7 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import Piece from './Piece';
 import type { Square as SquareType, Piece as PieceType } from 'chess.js';
-import { cn } from '@/lib/utils'; // Assuming shadcn utils exist or standard clsx/tailwind-merge
+import { cn } from '@/lib/utils';
 
 interface SquareProps {
     position: SquareType;
@@ -28,40 +28,49 @@ const Square: React.FC<SquareProps> = ({ position, isBlack, piece, onMove, isVal
         }),
     }), [position, onMove]);
 
-    // Tailwind colors for board
-    // Keeping similar colors but using classes or hex codes compatible with theme
-    // Let's use specific hex codes to match standard "Green" chess board or allow override
-    // Light: #ebecd0, Dark: #779556
-    const bgClass = isBlack ? 'bg-[#779556]' : 'bg-[#ebecd0]';
+    // Premium chess.com inspired colors
+    // Light: #ebecd0 -> Modern blue-gray light
+    // Dark: #779556 -> Modern blue-gray dark
+    const lightSquare = 'bg-[#e8eaed]';
+    const darkSquare = 'bg-[#7b8bab]';
+    const bgClass = isBlack ? darkSquare : lightSquare;
 
     return (
         <div
             ref={(node) => { drop(node); }}
-            className={cn("w-full h-full relative flex justify-center items-center select-none", bgClass)}
+            className={cn(
+                "w-full h-full relative flex justify-center items-center select-none transition-colors duration-150",
+                bgClass
+            )}
             data-square={position}
         >
-            {/* Overlays */}
+            {/* Check highlight - red radial gradient */}
             {isChecked && (
-                <div className="absolute inset-0 bg-red-600/60 z-10" />
+                <div className="absolute inset-0 bg-gradient-radial from-red-600/90 via-red-500/60 to-transparent z-10" 
+                     style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.9) 0%, rgba(239,68,68,0.5) 50%, transparent 70%)' }} />
             )}
+            
+            {/* Hover drop target highlight */}
             {!isChecked && isOver && canDrop && (
-                <div className="absolute inset-0 bg-yellow-400/50 z-10" />
+                <div className="absolute inset-0 bg-yellow-400/40 z-10" />
             )}
+            
+            {/* Last move highlight */}
             {!isChecked && !isOver && isLastMove && (
-                <div className="absolute inset-0 bg-yellow-200/50 z-10" />
+                <div className="absolute inset-0 bg-amber-400/40 z-10" />
             )}
-            {/* Valid Move Dot (if empty) */}
-             {isValidMove && !piece && (
-                <div className="absolute w-[20%] h-[20%] rounded-full bg-black/20 z-20" />
+            
+            {/* Valid move indicator - dot for empty, ring for capture */}
+            {isValidMove && !piece && (
+                <div className="absolute w-[28%] h-[28%] rounded-full bg-black/20 z-20 shadow-inner" />
             )}
-             {/* Valid Move Ring (if occupied - implied by !piece check above for dot, usually simple dot is fine or ring for capture) */}
-             {/* Note: Standard chess.com behavior is a ring for captures, but keeping simple dot logic from original or dot for empty. 
-                 Original code: {isValidMove && !piece && ...} so only for empty squares. 
-                 What about captures? Original code didn't seem to show capture hint explicitly or I missed it.
-                 Wait, line 25: `overlayColor = ...`. Original had simple overlay.
-                 Let's stick to simple dot for empty valid moves.
-             */}
+            
+            {/* Capture ring indicator */}
+            {isValidMove && piece && (
+                <div className="absolute inset-[6%] rounded-full border-[3px] sm:border-4 border-black/20 z-20" />
+            )}
 
+            {/* Piece */}
             <div className="z-30 w-full h-full">
                 {piece && (
                     <Piece 
@@ -73,7 +82,6 @@ const Square: React.FC<SquareProps> = ({ position, isBlack, piece, onMove, isVal
                     />
                 )}
             </div>
-             {/* Coordinates (Optional, add later if needed) */}
         </div>
     );
 };

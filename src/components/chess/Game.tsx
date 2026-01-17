@@ -4,6 +4,18 @@ import Board from "./Board";
 import { PieceIcons } from "./PieceIcons";
 import type { Square } from "chess.js";
 import CustomDragLayer from "./CustomDragLayer";
+import {
+  Crown,
+  RotateCcw,
+  Home,
+  ChevronLeft,
+  Cpu,
+  Users,
+  Swords,
+  Clock,
+  Trophy,
+  Zap,
+} from "lucide-react";
 
 function Game() {
   const {
@@ -23,14 +35,13 @@ function Game() {
     null,
   );
 
-  const [gameMode, setGameMode] = useState<"PvC" | "PvP" | null>(null); // Null means menu open
-  const [difficulty, setDifficulty] = useState(1); // 1-5
-  const [difficultySelect, setDifficultySelect] = useState(false); // Show difficulty select screen
-  const [colorSelect, setColorSelect] = useState(false); // Show color select screen
-  const [playerColor, setPlayerColor] = useState<"w" | "b">("w"); // Player is White
+  const [gameMode, setGameMode] = useState<"PvC" | "PvP" | null>(null);
+  const [difficulty, setDifficulty] = useState(1);
+  const [difficultySelect, setDifficultySelect] = useState(false);
+  const [colorSelect, setColorSelect] = useState(false);
+  const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
   const [showModal, setShowModal] = useState(true);
 
-  // Reset modal visibility when game over changes
   useEffect(() => {
     if (isGameOver) setShowModal(true);
   }, [isGameOver]);
@@ -100,21 +111,50 @@ function Game() {
   // AI Turn Effect
   useEffect(() => {
     if (gameMode === "PvC" && turn !== playerColor && !isGameOver) {
+      console.log(
+        "AI Turn triggered - turn:",
+        turn,
+        "playerColor:",
+        playerColor,
+      );
       const timer = setTimeout(() => {
-        import("../../lib/chess/engine").then(({ getBestMove }) => {
-          const aiMove = getBestMove(game, difficulty);
-          if (aiMove) {
-            // @ts-expect-error - aiMove is Move object or string, makeMove handles both but types might mismatch slightly
-            const executedMove = makeMove(aiMove);
-            if (executedMove) {
-              setLastMove({ from: executedMove.from, to: executedMove.to });
+        import("../../lib/chess/engine")
+          .then(({ getBestMove }) => {
+            console.log("Engine loaded, computing best move...");
+            const aiMove = getBestMove(game, difficulty);
+            console.log("AI move computed:", aiMove);
+            if (
+              aiMove &&
+              typeof aiMove === "object" &&
+              "from" in aiMove &&
+              "to" in aiMove
+            ) {
+              // Pass from/to separately since makeMove expects that format
+              const executedMove = makeMove(
+                aiMove.from,
+                aiMove.to,
+                aiMove.promotion || "q",
+              );
+              console.log("Executed move:", executedMove);
+              if (executedMove) {
+                setLastMove({ from: executedMove.from, to: executedMove.to });
+              }
             }
-          }
-        });
-      }, 500);
+          })
+          .catch((err) => console.error("Engine import error:", err));
+      }, 150); // Quick response - just enough delay to feel natural
       return () => clearTimeout(timer);
     }
-  }, [turn, gameMode, playerColor, isGameOver, game, makeMove, difficulty]);
+  }, [
+    fen,
+    turn,
+    gameMode,
+    playerColor,
+    isGameOver,
+    game,
+    makeMove,
+    difficulty,
+  ]); // Added 'fen' to trigger on board changes
 
   // Move History and Captures (Hooks must be unconditional)
   const { capturedWhite, capturedBlack } = useMemo(() => {
@@ -175,235 +215,495 @@ function Game() {
 
   // DIFFICULTY DATA
   const levels = [
-    { level: 1, name: "Beginner", stars: "⭐" },
-    { level: 2, name: "Intermediate", stars: "⭐⭐" },
-    { level: 3, name: "Advanced", stars: "⭐⭐⭐" },
-    { level: 4, name: "Expert", stars: "⭐⭐⭐⭐" },
-    { level: 5, name: "Master", stars: "⭐⭐⭐⭐⭐" },
+    {
+      level: 1,
+      name: "Beginner",
+      description: "Random moves",
+      icon: "🌱",
+      color: "from-green-500 to-emerald-600",
+    },
+    {
+      level: 2,
+      name: "Casual",
+      description: "Basic captures",
+      icon: "🎯",
+      color: "from-blue-500 to-cyan-600",
+    },
+    {
+      level: 3,
+      name: "Intermediate",
+      description: "2-move lookahead",
+      icon: "🧠",
+      color: "from-purple-500 to-violet-600",
+    },
+    {
+      level: 4,
+      name: "Advanced",
+      description: "3-move lookahead",
+      icon: "⚔️",
+      color: "from-orange-500 to-amber-600",
+    },
+    {
+      level: 5,
+      name: "Master",
+      description: "4-move lookahead",
+      icon: "👑",
+      color: "from-red-500 to-rose-600",
+    },
   ];
 
   // START SCREEN logic
-  // ... we will return different layouts based on state
   if (!gameMode) {
     if (difficultySelect) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-900 text-white p-4">
-          <h1 className="text-4xl font-bold mb-8">Select Difficulty</h1>
-          <div className="flex flex-col gap-4 w-full max-w-md">
-            {levels.map((lvl) => (
-              <button
-                key={lvl.level}
-                onClick={() => handleDifficultySelect(lvl.level)}
-                className="flex justify-between items-center p-4 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors border border-neutral-700 font-medium"
-              >
-                <span className="text-lg">{lvl.name}</span>
-                <span className="text-yellow-400">{lvl.stars}</span>
-              </button>
-            ))}
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6">
+          {/* Decorative background elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
           </div>
-          <button
-            onClick={() => setDifficultySelect(false)}
-            className="mt-8 px-8 py-2 border border-neutral-600 rounded  hover:bg-neutral-800 transition"
-          >
-            Back
-          </button>
+
+          <div className="relative z-10 w-full max-w-lg">
+            <button
+              onClick={() => setDifficultySelect(false)}
+              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8 group"
+            >
+              <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span>Back</span>
+            </button>
+
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-600 mb-4 shadow-lg shadow-purple-500/25">
+                <Cpu className="w-8 h-8" />
+              </div>
+              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                Choose Difficulty
+              </h1>
+              <p className="text-slate-400">Select your opponent's strength</p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              {levels.map((lvl) => (
+                <button
+                  key={lvl.level}
+                  onClick={() => handleDifficultySelect(lvl.level)}
+                  className="group relative flex items-center gap-4 p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+                >
+                  <div
+                    className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${lvl.color} text-2xl shadow-lg`}
+                  >
+                    {lvl.icon}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold text-lg">{lvl.name}</div>
+                    <div className="text-sm text-slate-400">
+                      {lvl.description}
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`w-2 h-2 rounded-full ${i < lvl.level ? "bg-amber-400" : "bg-slate-700"}`}
+                      />
+                    ))}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       );
     }
 
     if (colorSelect) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-900 text-white p-4">
-          <h1 className="text-4xl font-bold mb-8">Choose Side</h1>
-          <div className="flex gap-6">
-            <button
-              onClick={() => startGame("w")}
-              className="flex flex-col items-center justify-center p-8 bg-neutral-200 text-black rounded-xl hover:scale-105 transition active:scale-95 w-40 h-40"
-            >
-              <span className="text-6xl mb-2">♔</span>
-              <span className="font-bold">White</span>
-            </button>
-            <button
-              onClick={() => startGame("b")}
-              className="flex flex-col items-center justify-center p-8 bg-neutral-800 text-white border border-neutral-600 rounded-xl hover:scale-105 transition active:scale-95 w-40 h-40"
-            >
-              <span className="text-6xl mb-2">♚</span>
-              <span className="font-bold">Black</span>
-            </button>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6">
+          {/* Decorative background elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-slate-500/10 rounded-full blur-3xl" />
           </div>
-          <button
-            onClick={() => {
-              setColorSelect(false);
-              setDifficultySelect(true);
-            }}
-            className="mt-8 px-8 py-2 border border-neutral-600 rounded text-neutral-400 hover:bg-neutral-800 transition"
-          >
-            Back
-          </button>
+
+          <div className="relative z-10 w-full max-w-lg">
+            <button
+              onClick={() => {
+                setColorSelect(false);
+                setDifficultySelect(true);
+              }}
+              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8 group"
+            >
+              <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span>Back</span>
+            </button>
+
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 mb-4 shadow-lg shadow-amber-500/25">
+                <Crown className="w-8 h-8" />
+              </div>
+              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                Choose Your Side
+              </h1>
+              <p className="text-slate-400">White moves first</p>
+            </div>
+
+            <div className="flex gap-6 justify-center">
+              <button
+                onClick={() => startGame("w")}
+                className="group relative flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900 rounded-3xl hover:scale-105 transition-all duration-300 w-44 h-52 shadow-xl hover:shadow-2xl"
+              >
+                <div className="absolute inset-0 rounded-3xl bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="text-7xl mb-4 drop-shadow-lg relative z-10">
+                  ♔
+                </span>
+                <span className="font-bold text-xl relative z-10">White</span>
+                <span className="text-sm text-slate-600 relative z-10">
+                  Move First
+                </span>
+              </button>
+              <button
+                onClick={() => startGame("b")}
+                className="group relative flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-800 to-slate-900 text-white border border-slate-700 rounded-3xl hover:scale-105 transition-all duration-300 w-44 h-52 shadow-xl hover:shadow-2xl"
+              >
+                <div className="absolute inset-0 rounded-3xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="text-7xl mb-4 drop-shadow-lg relative z-10">
+                  ♚
+                </span>
+                <span className="font-bold text-xl relative z-10">Black</span>
+                <span className="text-sm text-slate-400 relative z-10">
+                  Respond
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       );
     }
 
+    // Main Menu
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-neutral-900 to-black text-white p-4">
-        <h1 className="text-6xl font-extrabold mb-2 tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
-          CHESS MASTER
-        </h1>
-        <p className="text-neutral-400 mb-12 text-lg">Select Game Mode</p>
-        <div className="flex flex-col sm:flex-row gap-6 w-full max-w-2xl justify-center">
-          <button
-            onClick={() => handleModeSelect("PvC")}
-            className="flex-1 p-8 bg-blue-600 rounded-xl hover:bg-blue-700 transition transform hover:-translate-y-1 shadow-lg shadow-blue-500/20 text-center font-bold text-xl flex flex-col items-center"
-          >
-            <span className="text-4xl mb-4">🤖</span>
-            Play vs Computer
-          </button>
-          <button
-            onClick={() => handleModeSelect("PvP")}
-            className="flex-1 p-8 bg-purple-600 rounded-xl hover:bg-purple-700 transition transform hover:-translate-y-1 shadow-lg shadow-purple-500/20 text-center font-bold text-xl flex flex-col items-center"
-          >
-            <span className="text-4xl mb-4">👥</span>
-            Play vs Friend
-          </button>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-6 overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
+          <div
+            className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-amber-500/5 to-transparent rounded-full blur-3xl" />
+        </div>
+
+        {/* Chess board pattern decoration */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
+          <div className="grid grid-cols-8 h-full">
+            {[...Array(64)].map((_, i) => (
+              <div
+                key={i}
+                className={`aspect-square ${(Math.floor(i / 8) + i) % 2 === 0 ? "bg-white" : ""}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center">
+          {/* Logo */}
+          <div className="relative mb-4">
+            <div className="absolute inset-0 blur-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 opacity-30" />
+            <div className="relative flex items-center gap-3">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                <Crown className="w-9 h-9 text-white" />
+              </div>
+            </div>
+          </div>
+
+          <h1 className="text-6xl sm:text-7xl font-black mb-3 tracking-tight">
+            <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              CHESS
+            </span>
+            <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+              MASTER
+            </span>
+          </h1>
+          <p className="text-slate-400 mb-12 text-lg tracking-wide">
+            The Ultimate Chess Experience
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-5 w-full max-w-xl">
+            <button
+              onClick={() => handleModeSelect("PvC")}
+              className="group flex-1 relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-blue-500/20"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600" />
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative p-8 flex flex-col items-center">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Cpu className="w-8 h-8" />
+                </div>
+                <span className="font-bold text-xl mb-1">vs Computer</span>
+                <span className="text-blue-100 text-sm">Challenge the AI</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleModeSelect("PvP")}
+              className="group flex-1 relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-purple-500/20"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-violet-600" />
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative p-8 flex flex-col items-center">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Users className="w-8 h-8" />
+                </div>
+                <span className="font-bold text-xl mb-1">vs Friend</span>
+                <span className="text-purple-100 text-sm">
+                  Local Multiplayer
+                </span>
+              </div>
+            </button>
+          </div>
+
+          {/* Footer features */}
+          <div className="flex gap-8 mt-16 text-slate-500 text-sm">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-500" />
+              <span>Smart AI</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Swords className="w-4 h-4 text-blue-500" />
+              <span>5 Difficulty Levels</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-purple-500" />
+              <span>Track Progress</span>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col items-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex flex-col">
       <CustomDragLayer />
 
-      {/* 1. Header Control Bar (Top) */}
-      <div className="w-full max-w-6xl flex justify-between items-center mb-6 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow-sm">
-        <div className="flex gap-2">
-          <button
-            onClick={handleBackToMenu}
-            className="px-4 py-2 bg-neutral-200 dark:bg-neutral-800 rounded hover:opacity-80 transition font-medium text-sm"
-          >
-            Main Menu
-          </button>
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 bg-neutral-200 dark:bg-neutral-800 rounded hover:opacity-80 transition font-medium text-sm"
-          >
-            Restart
-          </button>
-          <button
-            onClick={handleUndo}
-            className="px-4 py-2 bg-neutral-200 dark:bg-neutral-800 rounded hover:opacity-80 transition font-medium text-sm"
-          >
-            Undo ↩️
-          </button>
-        </div>
-        <div className="text-xl font-bold">
-          {gameMode === "PvC" ? `Vs Computer (Lvl ${difficulty})` : "PvP"}
-        </div>
+      {/* Decorative background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start w-full max-w-6xl">
-        {/* Board Section */}
-        <div className="flex-1 flex flex-col gap-4 items-center w-full">
-          {/* Opponent Strip */}
-          <PlayerStrip
-            name={gameMode === "PvC" ? "Computer" : "Opponent"}
-            isThinking={turn === (playerColor === "w" ? "b" : "w")}
-            avatar="👤"
-            capturedPieces={playerColor === "w" ? capturedWhite : capturedBlack}
-            playerColor={playerColor} // Pieces shown are opponent's "captured stack" -> Actually here we show what they captured? No, what they lost?
-            // Original logic: "capturedWhite" = Pieces lost by White.
-            // If I am White, "capturedWhite" is what I lost. So it sits on Opponent's side.
-            // Opponent side should show what I lost (capturedWhite).
-            // wait, previous code: "(playerColor === 'w' ? capturedWhite : capturedBlack)"
-            // Yes.
-          />
-
-          {/* Board Area */}
-          <div className="w-full h-auto flex justify-center">
-            <Board
-              game={game}
-              onMove={onDrop}
-              validMoves={validMoves}
-              lastMove={lastMove}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-              checkedSquare={checkedSquare}
-              orientation={playerColor === "w" ? "white" : "black"}
-            />
+      {/* Header */}
+      <header className="relative z-10 border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleBackToMenu}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 transition-all text-sm font-medium group"
+            >
+              <Home className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline">Menu</span>
+            </button>
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 transition-all text-sm font-medium group"
+            >
+              <RotateCcw className="w-4 h-4 group-hover:rotate-[-90deg] transition-transform" />
+              <span className="hidden sm:inline">Restart</span>
+            </button>
+            <button
+              onClick={handleUndo}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 transition-all text-sm font-medium group"
+            >
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline">Undo</span>
+            </button>
           </div>
 
-          {/* Player Strip (Me) */}
-          <PlayerStrip
-            name="You"
-            isThinking={turn === playerColor}
-            avatar="😎"
-            capturedPieces={playerColor === "w" ? capturedBlack : capturedWhite}
-            playerColor={playerColor === "w" ? "b" : "w"} // Show pieces belonging to opponent (that I captured)
-          />
-        </div>
-
-        {/* Sidebar Info */}
-        <div className="w-full lg:w-80 flex flex-col gap-4">
-          <div className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 flex flex-col items-center">
-            <div
-              className={`text-2xl font-bold mb-2 ${turn === "w" ? "text-neutral-900 dark:text-white" : "text-neutral-600 dark:text-neutral-400"}`}
-            >
-              {isGameOver ? (
-                <span className="text-red-500">{result}</span>
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-800/80 to-slate-800/40 border border-slate-700/50">
+              {gameMode === "PvC" ? (
+                <>
+                  <Cpu className="w-4 h-4 text-blue-400" />
+                  <span className="text-sm font-medium">
+                    Level {difficulty}
+                  </span>
+                  <div className="flex gap-0.5 ml-1">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`w-1.5 h-1.5 rounded-full ${i < difficulty ? "bg-amber-400" : "bg-slate-700"}`}
+                      />
+                    ))}
+                  </div>
+                </>
               ) : (
                 <>
-                  <span>{turn === "w" ? "White" : "Black"}</span> to move
+                  <Users className="w-4 h-4 text-purple-400" />
+                  <span className="text-sm font-medium">Local Match</span>
                 </>
               )}
             </div>
           </div>
+        </div>
+      </header>
 
-          <div className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 h-[500px] overflow-hidden flex flex-col">
-            <h3 className="font-bold border-b border-neutral-200 dark:border-neutral-700 pb-2 mb-2">
-              Move History
-            </h3>
-            <div className="overflow-y-auto flex-1 font-mono text-sm leading-6">
-              {moveHistory.map((move, index) =>
-                index % 2 === 0 ? (
+      {/* Main Content */}
+      <main className="relative z-10 flex-1 flex flex-col lg:flex-row gap-6 p-4 sm:p-6 max-w-7xl mx-auto w-full">
+        {/* Left Panel - Board Section */}
+        <div className="flex-1 flex flex-col gap-4 min-w-0">
+          {/* Opponent Strip */}
+          <PlayerStrip
+            name={gameMode === "PvC" ? "Computer" : "Opponent"}
+            isThinking={
+              gameMode === "PvC" && turn !== playerColor && !isGameOver
+            }
+            avatar={
+              gameMode === "PvC" ? (
+                <Cpu className="w-5 h-5" />
+              ) : (
+                <Users className="w-5 h-5" />
+              )
+            }
+            capturedPieces={playerColor === "w" ? capturedWhite : capturedBlack}
+            playerColor={playerColor}
+            isActive={turn !== playerColor}
+            variant="opponent"
+          />
+
+          {/* Board */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-[min(85vh,600px)]">
+              <Board
+                game={game}
+                onMove={onDrop}
+                validMoves={validMoves}
+                lastMove={lastMove}
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+                checkedSquare={checkedSquare}
+                orientation={playerColor === "w" ? "white" : "black"}
+              />
+            </div>
+          </div>
+
+          {/* Player Strip */}
+          <PlayerStrip
+            name="You"
+            isThinking={false}
+            avatar="👤"
+            capturedPieces={playerColor === "w" ? capturedBlack : capturedWhite}
+            playerColor={playerColor === "w" ? "b" : "w"}
+            isActive={turn === playerColor}
+            variant="player"
+          />
+        </div>
+
+        {/* Right Panel - Info Sidebar */}
+        <aside className="w-full lg:w-80 flex flex-col gap-4">
+          {/* Turn Indicator */}
+          <div className="bg-slate-900/50 backdrop-blur border border-slate-800/50 rounded-2xl p-6 text-center">
+            {isGameOver ? (
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                  <Trophy className="w-7 h-7 text-white" />
+                </div>
+                <div className="text-xl font-bold text-amber-400">{result}</div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3">
+                <div
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${
+                    turn === "w"
+                      ? "bg-gradient-to-br from-slate-100 to-slate-300 shadow-slate-400/20"
+                      : "bg-gradient-to-br from-slate-700 to-slate-900 shadow-slate-500/20 border border-slate-600"
+                  }`}
+                >
+                  <span className="text-3xl">{turn === "w" ? "♔" : "♚"}</span>
+                </div>
+                <div className="flex items-center gap-2">
                   <div
-                    key={index}
-                    className="flex border-b border-neutral-100 dark:border-neutral-800 py-1"
-                  >
-                    <span className="w-8 text-neutral-400">
-                      {Math.floor(index / 2) + 1}.
-                    </span>
-                    <span className="w-16 font-medium">{move}</span>
-                    {moveHistory[index + 1] && (
-                      <span className="w-16 text-neutral-600 dark:text-neutral-400">
-                        {moveHistory[index + 1]}
-                      </span>
-                    )}
-                  </div>
-                ) : null,
+                    className={`w-3 h-3 rounded-full ${turn === playerColor ? "bg-green-400 animate-pulse" : "bg-slate-600"}`}
+                  />
+                  <span className="text-lg font-semibold">
+                    {turn === "w" ? "White" : "Black"} to move
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Move History */}
+          <div className="flex-1 bg-slate-900/50 backdrop-blur border border-slate-800/50 rounded-2xl overflow-hidden flex flex-col min-h-[300px] lg:min-h-0">
+            <div className="px-5 py-4 border-b border-slate-800/50 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-slate-400" />
+              <h3 className="font-semibold">Move History</h3>
+              <span className="ml-auto text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
+                {moveHistory.length} moves
+              </span>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              {moveHistory.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-slate-500 text-sm">
+                  No moves yet
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {moveHistory.map((move, index) =>
+                    index % 2 === 0 ? (
+                      <div
+                        key={index}
+                        className="flex items-center py-2 px-3 rounded-lg hover:bg-slate-800/50 transition-colors group"
+                      >
+                        <span className="w-8 text-slate-500 text-sm font-mono">
+                          {Math.floor(index / 2) + 1}.
+                        </span>
+                        <span className="w-16 font-mono font-medium">
+                          {move}
+                        </span>
+                        {moveHistory[index + 1] && (
+                          <span className="w-16 font-mono text-slate-400">
+                            {moveHistory[index + 1]}
+                          </span>
+                        )}
+                      </div>
+                    ) : null,
+                  )}
+                </div>
               )}
             </div>
           </div>
-        </div>
-      </div>
+        </aside>
+      </main>
 
       {/* Game Over Modal */}
       {isGameOver && showModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-in fade-in">
-          <div className="bg-white dark:bg-neutral-900 p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center">
-            <h2 className="text-2xl font-extrabold mb-4">Game Over</h2>
-            <p className="text-lg mb-8">{result}</p>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center animate-in zoom-in-95 fade-in duration-300">
+            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-500/30">
+              <Trophy className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold mb-2">Game Over</h2>
+            <p className="text-xl text-amber-400 font-semibold mb-8">
+              {result}
+            </p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={handleReset}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition"
+                className="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white rounded-xl font-bold transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25"
               >
                 Play Again
               </button>
               <button
-                onClick={handleModalClose}
-                className="w-full py-3 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg font-medium transition"
+                onClick={handleBackToMenu}
+                className="w-full py-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl font-medium transition-all"
               >
-                Close
+                Main Menu
+              </button>
+              <button
+                onClick={handleModalClose}
+                className="w-full py-3 text-slate-400 hover:text-white transition-colors text-sm"
+              >
+                Continue Viewing
               </button>
             </div>
           </div>
@@ -413,51 +713,100 @@ function Game() {
   );
 }
 
-// Subcomponent for Player Strip
+// Premium Player Strip Component
 function PlayerStrip({
   name,
   isThinking,
   avatar,
   capturedPieces,
   playerColor,
-}: any) {
+  isActive,
+  variant,
+}: {
+  name: string;
+  isThinking: boolean;
+  avatar: React.ReactNode;
+  capturedPieces: string[];
+  playerColor: string;
+  isActive: boolean;
+  variant: "player" | "opponent";
+}) {
   return (
-    <div className="w-full bg-white dark:bg-neutral-900 p-4 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 flex justify-between items-center">
-      <div className="flex items-center gap-4">
-        <div className="text-3xl bg-neutral-100 dark:bg-neutral-800 w-12 h-12 flex items-center justify-center rounded-full">
-          {avatar}
-        </div>
-        <div>
-          <div className="font-bold flex items-center gap-2">
-            {name}
-            {isThinking && (
-              <span className="text-xs text-blue-500 animate-pulse">
-                Thinking...
-              </span>
+    <div
+      className={`w-full bg-slate-900/50 backdrop-blur border rounded-2xl p-4 transition-all duration-300 ${
+        isActive
+          ? "border-blue-500/50 shadow-lg shadow-blue-500/10"
+          : "border-slate-800/50"
+      }`}
+    >
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <div
+            className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg transition-all duration-300 ${
+              isActive
+                ? variant === "player"
+                  ? "bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25"
+                  : "bg-gradient-to-br from-purple-500 to-violet-600 shadow-lg shadow-purple-500/25"
+                : "bg-slate-800"
+            }`}
+          >
+            {typeof avatar === "string" ? avatar : avatar}
+          </div>
+          <div>
+            <div className="font-semibold flex items-center gap-2">
+              {name}
+              {isThinking && (
+                <span className="flex items-center gap-1.5 text-xs text-blue-400">
+                  <span className="flex gap-0.5">
+                    <span
+                      className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"
+                      style={{ animationDelay: "0ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"
+                      style={{ animationDelay: "150ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"
+                      style={{ animationDelay: "300ms" }}
+                    />
+                  </span>
+                  Thinking
+                </span>
+              )}
+            </div>
+            {isActive && !isThinking && (
+              <span className="text-xs text-green-400">Your turn</span>
             )}
           </div>
         </div>
-      </div>
 
-      <div className="flex -space-x-4 h-8">
-        {capturedPieces.map((p: string, i: number) => {
-          // Logic issue in original code handled here: if I'm white, I want to show pieces I captured (Black pieces).
-          // In the usage above: `playerColor` for 'You' is calculated as `playerColor === 'w' ? 'b' : 'w'`.
-          // So we just use `playerColor` prop to decide icon color directly.
-          // But wait, PieceIcons map expects 'w' or 'b'.
-          // If `playerColor` prop passed is 'b', we use 'b'.
-          // Let's ensure strict typing later, for now 'w' | 'b'
-          const safeColor = playerColor === "w" ? "w" : "b";
-          const Icon = PieceIcons[safeColor][p];
-          return (
-            <div
-              key={i}
-              className="w-8 h-8 relative transition-transform hover:-translate-y-1"
-            >
-              <Icon style={{ width: "100%", height: "100%" }} />
+        {/* Captured Pieces */}
+        <div className="flex items-center gap-1">
+          {capturedPieces.length === 0 ? (
+            <span className="text-xs text-slate-600">No captures</span>
+          ) : (
+            <div className="flex -space-x-2">
+              {capturedPieces.slice(0, 8).map((p: string, i: number) => {
+                const safeColor = playerColor === "w" ? "w" : "b";
+                const Icon = PieceIcons[safeColor][p];
+                return (
+                  <div
+                    key={i}
+                    className="w-7 h-7 relative transition-transform hover:scale-110 hover:z-10"
+                  >
+                    <Icon style={{ width: "100%", height: "100%" }} />
+                  </div>
+                );
+              })}
+              {capturedPieces.length > 8 && (
+                <div className="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold">
+                  +{capturedPieces.length - 8}
+                </div>
+              )}
             </div>
-          );
-        })}
+          )}
+        </div>
       </div>
     </div>
   );

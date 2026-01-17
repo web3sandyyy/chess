@@ -30,7 +30,7 @@ export const getBestMove = (game: Chess, difficultyLevel: number = 1): Move | nu
     }
 
     // --- LEVEL 3, 4, 5: MINIMAX with Iterative Deepening ---
-    const TIME_LIMIT = 2000; // 2 seconds
+    const TIME_LIMIT = 800; // 800ms for snappy response
     const endTime = Date.now() + TIME_LIMIT;
 
     // Target Depths
