@@ -1,0 +1,574 @@
+{
+  "openings": [
+    {
+      "eco": "A00",
+      "name": "Irregular Opening",
+      "moves": [],
+      "description": "An unusual first move"
+    },
+    {
+      "eco": "B00",
+      "name": "King's Pawn Opening",
+      "moves": ["e4"],
+      "description": "Controls the center and opens lines for bishop and queen"
+    },
+    {
+      "eco": "C20",
+      "name": "King's Pawn Game",
+      "moves": ["e4", "e5"],
+      "description": "Classical response, fighting for central control"
+    },
+    {
+      "eco": "C44",
+      "name": "King's Knight Opening",
+      "moves": ["e4", "e5", "Nf3"],
+      "description": "Develops knight while attacking the e5 pawn"
+    },
+    {
+      "eco": "C50",
+      "name": "Italian Game",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4"],
+      "description": "Targets f7, the weakest point in Black's position"
+    },
+    {
+      "eco": "C51",
+      "name": "Evans Gambit",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "b4"],
+      "description": "Aggressive pawn sacrifice for rapid development"
+    },
+    {
+      "eco": "C54",
+      "name": "Italian Game: Classical Variation",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3"],
+      "description": "Prepares d4 to build a strong center"
+    },
+    {
+      "eco": "C55",
+      "name": "Two Knights Defense",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6"],
+      "description": "Aggressive counterattack, inviting the Fried Liver"
+    },
+    {
+      "eco": "C57",
+      "name": "Fried Liver Attack",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "Ng5", "d5", "exd5", "Nxd5", "Nxf7"],
+      "description": "Famous knight sacrifice on f7 for a fierce attack"
+    },
+    {
+      "eco": "C60",
+      "name": "Ruy Lopez",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5"],
+      "description": "One of the oldest and most respected openings"
+    },
+    {
+      "eco": "C65",
+      "name": "Ruy Lopez: Berlin Defense",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6"],
+      "description": "Solid and drawish, favored by world champions"
+    },
+    {
+      "eco": "C78",
+      "name": "Ruy Lopez: Morphy Defense",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6"],
+      "description": "Challenges the bishop immediately"
+    },
+    {
+      "eco": "C21",
+      "name": "Danish Gambit",
+      "moves": ["e4", "e5", "d4", "exd4", "c3"],
+      "description": "Sharp gambit for rapid development"
+    },
+    {
+      "eco": "C22",
+      "name": "Center Game",
+      "moves": ["e4", "e5", "d4", "exd4", "Qxd4"],
+      "description": "Quick queen development but exposed queen"
+    },
+    {
+      "eco": "C23",
+      "name": "Bishop's Opening",
+      "moves": ["e4", "e5", "Bc4"],
+      "description": "Develops bishop to an active square"
+    },
+    {
+      "eco": "C25",
+      "name": "Vienna Game",
+      "moves": ["e4", "e5", "Nc3"],
+      "description": "Flexible setup, often transposes to other openings"
+    },
+    {
+      "eco": "C30",
+      "name": "King's Gambit",
+      "moves": ["e4", "e5", "f4"],
+      "description": "Romantic era favorite, sacrificing f-pawn for attack"
+    },
+    {
+      "eco": "C33",
+      "name": "King's Gambit Accepted",
+      "moves": ["e4", "e5", "f4", "exf4"],
+      "description": "Black accepts the pawn sacrifice"
+    },
+    {
+      "eco": "C40",
+      "name": "Latvian Gambit",
+      "moves": ["e4", "e5", "Nf3", "f5"],
+      "description": "Risky but aggressive counterattack"
+    },
+    {
+      "eco": "C41",
+      "name": "Philidor Defense",
+      "moves": ["e4", "e5", "Nf3", "d6"],
+      "description": "Solid but passive pawn structure"
+    },
+    {
+      "eco": "C42",
+      "name": "Petrov's Defense",
+      "moves": ["e4", "e5", "Nf3", "Nf6"],
+      "description": "Symmetrical and solid, leads to drawish positions"
+    },
+    {
+      "eco": "C45",
+      "name": "Scotch Game",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "d4"],
+      "description": "Opens the center early for active piece play"
+    },
+    {
+      "eco": "C46",
+      "name": "Four Knights Game",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Nc3", "Nf6"],
+      "description": "Symmetrical development, solid and equal"
+    },
+    {
+      "eco": "B20",
+      "name": "Sicilian Defense",
+      "moves": ["e4", "c5"],
+      "description": "The most popular response to e4, fighting for d4"
+    },
+    {
+      "eco": "B21",
+      "name": "Sicilian: Smith-Morra Gambit",
+      "moves": ["e4", "c5", "d4", "cxd4", "c3"],
+      "description": "Pawn sacrifice for rapid development and open lines"
+    },
+    {
+      "eco": "B22",
+      "name": "Sicilian: Alapin Variation",
+      "moves": ["e4", "c5", "c3"],
+      "description": "Prepares d4, solid anti-Sicilian"
+    },
+    {
+      "eco": "B30",
+      "name": "Sicilian: Rossolimo Variation",
+      "moves": ["e4", "c5", "Nf3", "Nc6", "Bb5"],
+      "description": "Positional approach avoiding main Sicilian lines"
+    },
+    {
+      "eco": "B50",
+      "name": "Sicilian: Open",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4"],
+      "description": "Main line Sicilian with open center"
+    },
+    {
+      "eco": "B52",
+      "name": "Sicilian: Najdorf Variation",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "a6"],
+      "description": "Most popular Sicilian, sharp and complex"
+    },
+    {
+      "eco": "B60",
+      "name": "Sicilian: Dragon Variation",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "g6"],
+      "description": "Fianchetto bishop creates dangerous attacks"
+    },
+    {
+      "eco": "B80",
+      "name": "Sicilian: Scheveningen",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e6"],
+      "description": "Solid pawn structure with ...e6 and ...d6"
+    },
+    {
+      "eco": "B10",
+      "name": "Caro-Kann Defense",
+      "moves": ["e4", "c6"],
+      "description": "Solid defense preparing ...d5"
+    },
+    {
+      "eco": "B12",
+      "name": "Caro-Kann: Advance Variation",
+      "moves": ["e4", "c6", "d4", "d5", "e5"],
+      "description": "White gains space but Black has solid structure"
+    },
+    {
+      "eco": "B13",
+      "name": "Caro-Kann: Exchange Variation",
+      "moves": ["e4", "c6", "d4", "d5", "exd5", "cxd5"],
+      "description": "Symmetrical pawn structure, often drawish"
+    },
+    {
+      "eco": "B02",
+      "name": "Alekhine's Defense",
+      "moves": ["e4", "Nf6"],
+      "description": "Provocative defense, inviting e5 to attack later"
+    },
+    {
+      "eco": "B06",
+      "name": "Modern Defense",
+      "moves": ["e4", "g6"],
+      "description": "Hypermodern approach, fianchettoing the bishop"
+    },
+    {
+      "eco": "B07",
+      "name": "Pirc Defense",
+      "moves": ["e4", "d6", "d4", "Nf6", "Nc3", "g6"],
+      "description": "Flexible setup, allowing White to build center"
+    },
+    {
+      "eco": "B01",
+      "name": "Scandinavian Defense",
+      "moves": ["e4", "d5"],
+      "description": "Immediately challenges e4, trading center pawns"
+    },
+    {
+      "eco": "C00",
+      "name": "French Defense",
+      "moves": ["e4", "e6"],
+      "description": "Solid but cramped, preparing ...d5"
+    },
+    {
+      "eco": "C02",
+      "name": "French: Advance Variation",
+      "moves": ["e4", "e6", "d4", "d5", "e5"],
+      "description": "White gains space, Black attacks the chain"
+    },
+    {
+      "eco": "C03",
+      "name": "French: Tarrasch Variation",
+      "moves": ["e4", "e6", "d4", "d5", "Nd2"],
+      "description": "Flexible knight development, avoiding pin"
+    },
+    {
+      "eco": "C10",
+      "name": "French: Winawer Variation",
+      "moves": ["e4", "e6", "d4", "d5", "Nc3", "Bb4"],
+      "description": "Sharp and complex, Black pins the knight"
+    },
+    {
+      "eco": "D00",
+      "name": "Queen's Pawn Opening",
+      "moves": ["d4"],
+      "description": "Controls center, supports c4 and e4"
+    },
+    {
+      "eco": "D02",
+      "name": "London System",
+      "moves": ["d4", "d5", "Nf3", "Nf6", "Bf4"],
+      "description": "Solid system, easy to learn and play"
+    },
+    {
+      "eco": "D06",
+      "name": "Queen's Gambit",
+      "moves": ["d4", "d5", "c4"],
+      "description": "Classic gambit, fighting for central control"
+    },
+    {
+      "eco": "D30",
+      "name": "Queen's Gambit Declined",
+      "moves": ["d4", "d5", "c4", "e6"],
+      "description": "Solid defense, maintaining central pawn"
+    },
+    {
+      "eco": "D20",
+      "name": "Queen's Gambit Accepted",
+      "moves": ["d4", "d5", "c4", "dxc4"],
+      "description": "Black accepts but must fight to keep the pawn"
+    },
+    {
+      "eco": "D10",
+      "name": "Slav Defense",
+      "moves": ["d4", "d5", "c4", "c6"],
+      "description": "Solid defense, keeping light-squared bishop active"
+    },
+    {
+      "eco": "E00",
+      "name": "Indian Defense",
+      "moves": ["d4", "Nf6"],
+      "description": "Flexible knight development, many transpositions"
+    },
+    {
+      "eco": "E60",
+      "name": "King's Indian Defense",
+      "moves": ["d4", "Nf6", "c4", "g6"],
+      "description": "Hypermodern defense with powerful kingside attack"
+    },
+    {
+      "eco": "E70",
+      "name": "King's Indian: Classical",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7", "e4", "d6", "Nf3"],
+      "description": "Main line with plans for f5 or c5 breaks"
+    },
+    {
+      "eco": "E80",
+      "name": "King's Indian: Sämisch",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7", "e4", "d6", "f3"],
+      "description": "White builds a massive center"
+    },
+    {
+      "eco": "E20",
+      "name": "Nimzo-Indian Defense",
+      "moves": ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4"],
+      "description": "Black pins knight, fighting for e4 control"
+    },
+    {
+      "eco": "E10",
+      "name": "Queen's Indian Defense",
+      "moves": ["d4", "Nf6", "c4", "e6", "Nf3", "b6"],
+      "description": "Fianchetto bishop controls e4 and central squares"
+    },
+    {
+      "eco": "A40",
+      "name": "Dutch Defense",
+      "moves": ["d4", "f5"],
+      "description": "Aggressive pawn push, fighting for e4"
+    },
+    {
+      "eco": "A80",
+      "name": "Dutch: Leningrad Variation",
+      "moves": ["d4", "f5", "c4", "Nf6", "g3", "g6"],
+      "description": "Combines Dutch with King's Indian setup"
+    },
+    {
+      "eco": "D70",
+      "name": "Grünfeld Defense",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "d5"],
+      "description": "Attacks the center with pieces, not pawns"
+    },
+    {
+      "eco": "A45",
+      "name": "Trompowsky Attack",
+      "moves": ["d4", "Nf6", "Bg5"],
+      "description": "Avoids main lines, creates early imbalances"
+    },
+    {
+      "eco": "D03",
+      "name": "Torre Attack",
+      "moves": ["d4", "Nf6", "Nf3", "d5", "Bg5"],
+      "description": "Simple development with early bishop sortie"
+    },
+    {
+      "eco": "A04",
+      "name": "Réti Opening",
+      "moves": ["Nf3"],
+      "description": "Flexible hypermodern approach"
+    },
+    {
+      "eco": "A05",
+      "name": "Réti: King's Indian Attack",
+      "moves": ["Nf3", "d5", "g3"],
+      "description": "White fianchettoes, flexible pawn structure"
+    },
+    {
+      "eco": "A10",
+      "name": "English Opening",
+      "moves": ["c4"],
+      "description": "Flank opening, fighting for d5"
+    },
+    {
+      "eco": "A20",
+      "name": "English: Reversed Sicilian",
+      "moves": ["c4", "e5"],
+      "description": "Black plays Sicilian with colors reversed"
+    },
+    {
+      "eco": "A01",
+      "name": "Nimzowitsch-Larsen Attack",
+      "moves": ["b3"],
+      "description": "Fianchetto opening, hypermodern style"
+    },
+    {
+      "eco": "A02",
+      "name": "Bird's Opening",
+      "moves": ["f4"],
+      "description": "Controls e5, often leads to sharp play"
+    },
+    {
+      "eco": "B00",
+      "name": "Owen's Defense",
+      "moves": ["e4", "b6"],
+      "description": "Rare but playable, fianchetto setup"
+    },
+    {
+      "eco": "A00",
+      "name": "Grob Opening",
+      "moves": ["g4"],
+      "description": "Eccentric but playable surprise weapon"
+    },
+    {
+      "eco": "A00",
+      "name": "Van Geet Opening",
+      "moves": ["Nc3"],
+      "description": "Unusual knight-first development"
+    },
+    {
+      "eco": "A00",
+      "name": "Ware Opening",
+      "moves": ["a4"],
+      "description": "Rare flank opening"
+    },
+    {
+      "eco": "A00",
+      "name": "Anderssen's Opening",
+      "moves": ["a3"],
+      "description": "Waiting move, preparing b4"
+    },
+    {
+      "eco": "C47",
+      "name": "Four Knights: Spanish Variation",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Nc3", "Nf6", "Bb5"],
+      "description": "Combines Ruy Lopez ideas with Four Knights"
+    },
+    {
+      "eco": "C48",
+      "name": "Four Knights: Scotch Variation",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Nc3", "Nf6", "d4"],
+      "description": "Central break in the Four Knights setup"
+    },
+    {
+      "eco": "C62",
+      "name": "Ruy Lopez: Steinitz Defense",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "d6"],
+      "description": "Solid but passive, defends e5 pawn"
+    },
+    {
+      "eco": "C67",
+      "name": "Ruy Lopez: Berlin Endgame",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4", "d4", "Nd6", "Bxc6", "dxc6", "dxe5", "Nf5", "Qxd8+", "Kxd8"],
+      "description": "Famous drawish endgame used at the highest level"
+    },
+    {
+      "eco": "C80",
+      "name": "Ruy Lopez: Open Defense",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4"],
+      "description": "Black captures e4, leading to tactical play"
+    },
+    {
+      "eco": "C84",
+      "name": "Ruy Lopez: Closed Defense",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7"],
+      "description": "Classical main line, complex strategic battle"
+    },
+    {
+      "eco": "C88",
+      "name": "Ruy Lopez: Marshall Attack",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d5"],
+      "description": "Famous pawn sacrifice for fierce kingside attack"
+    },
+    {
+      "eco": "B23",
+      "name": "Sicilian: Closed Variation",
+      "moves": ["e4", "c5", "Nc3"],
+      "description": "Avoids Open Sicilian, flexible setup"
+    },
+    {
+      "eco": "B27",
+      "name": "Sicilian: Hyperaccelerated Dragon",
+      "moves": ["e4", "c5", "Nf3", "g6"],
+      "description": "Early fianchetto before ...d6"
+    },
+    {
+      "eco": "B33",
+      "name": "Sicilian: Accelerated Dragon",
+      "moves": ["e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "g6"],
+      "description": "Dragon setup without ...d6, allowing ...d5 in one move"
+    },
+    {
+      "eco": "B40",
+      "name": "Sicilian: Paulsen/Kan Variation",
+      "moves": ["e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "a6"],
+      "description": "Flexible setup with ...a6, preparing ...b5"
+    },
+    {
+      "eco": "B90",
+      "name": "Sicilian: English Attack",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "a6", "Be3", "e6", "f3"],
+      "description": "Aggressive setup with Be3, f3, Qd2, and g4"
+    },
+    {
+      "eco": "B96",
+      "name": "Sicilian: Najdorf Poisoned Pawn",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "a6", "Bg5", "e6", "f4", "Qb6"],
+      "description": "Sharp line where Black grabs the b2 pawn"
+    },
+    {
+      "eco": "B15",
+      "name": "Caro-Kann: Main Line",
+      "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4"],
+      "description": "Classical main line with knight recapture"
+    },
+    {
+      "eco": "B17",
+      "name": "Caro-Kann: Steinitz Variation",
+      "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Nd7"],
+      "description": "Solid setup with ...Nd7 before ...Ngf6"
+    },
+    {
+      "eco": "B18",
+      "name": "Caro-Kann: Classical Variation",
+      "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5"],
+      "description": "Developing bishop outside the pawn chain"
+    },
+    {
+      "eco": "C11",
+      "name": "French: Classical Variation",
+      "moves": ["e4", "e6", "d4", "d5", "Nc3", "Nf6"],
+      "description": "Main line French with flexible piece play"
+    },
+    {
+      "eco": "C06",
+      "name": "French: Rubinstein Variation",
+      "moves": ["e4", "e6", "d4", "d5", "Nc3", "dxe4"],
+      "description": "Black releases tension early"
+    },
+    {
+      "eco": "D31",
+      "name": "Queen's Gambit: Semi-Slav",
+      "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "Nf3", "c6"],
+      "description": "Solid triangle formation with ...c6 and ...e6"
+    },
+    {
+      "eco": "D37",
+      "name": "Queen's Gambit Declined: 5.Bf4",
+      "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "Nf3", "Be7", "Bf4"],
+      "description": "Solid bishop development controlling e5"
+    },
+    {
+      "eco": "D52",
+      "name": "Queen's Gambit Declined: Cambridge Springs",
+      "moves": ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "Bg5", "Nbd7", "Nf3", "c6", "e3", "Qa5"],
+      "description": "Active queen sortie creating tactical threats"
+    },
+    {
+      "eco": "D80",
+      "name": "Grünfeld: Exchange Variation",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "d5", "cxd5", "Nxd5", "e4", "Nxc3", "bxc3"],
+      "description": "White builds strong center, Black attacks it"
+    },
+    {
+      "eco": "E32",
+      "name": "Nimzo-Indian: Classical",
+      "moves": ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4", "Qc2"],
+      "description": "Avoiding doubled pawns with queen move"
+    },
+    {
+      "eco": "E41",
+      "name": "Nimzo-Indian: Hübner Variation",
+      "moves": ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4", "e3", "c5", "Bd3", "Nc6", "Nf3", "Bxc3+", "bxc3", "d6"],
+      "description": "Black trades bishop for knight, solid structure"
+    },
+    {
+      "eco": "E97",
+      "name": "King's Indian: Mar del Plata",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7", "e4", "d6", "Nf3", "O-O", "Be2", "e5", "O-O", "Nc6", "d5", "Ne7"],
+      "description": "Famous attacking variation with opposite side play"
+    }
+  ]
+}
