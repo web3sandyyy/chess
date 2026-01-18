@@ -1,9 +1,13 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useChess } from "../../hooks/useChess";
+import { useCoach } from "../../hooks/useCoach";
+import { useChessStore } from "../../store/chessStore";
 import Board from "./Board";
 import { PieceIcons } from "./PieceIcons";
 import type { Square } from "chess.js";
 import CustomDragLayer from "./CustomDragLayer";
+import CoachChat from "../coach/CoachChat";
+import OpeningSidebar from "../coach/OpeningSidebar";
 import {
   Crown,
   RotateCcw,
@@ -15,6 +19,8 @@ import {
   Clock,
   Trophy,
   Zap,
+  BookOpen,
+  GraduationCap,
 } from "lucide-react";
 
 function Game() {
@@ -29,6 +35,12 @@ function Game() {
     resetGame,
     getValidMoves,
   } = useChess();
+  
+  // AI Coach integration
+  const { analyzeMove } = useCoach();
+  const { setDifficulty: setStoreDifficulty, setGameMode: setStoreGameMode, setPlayerColor: setStorePlayerColor } = useChessStore();
+  const [showCoach, setShowCoach] = useState(true);
+  
   const [_selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(
@@ -49,7 +61,7 @@ function Game() {
   const handleModalClose = () => setShowModal(false);
 
   const onDrop = useCallback(
-    (sourceSquare: string, targetSquare: string) => {
+    async (sourceSquare: string, targetSquare: string) => {
       // Prevent move if computer's turn
       if (gameMode === "PvC" && turn !== playerColor) return;
 
@@ -59,9 +71,14 @@ function Game() {
         setLastMove({ from: sourceSquare, to: targetSquare });
         setValidMoves([]);
         setSelectedSquare(null);
+        
+        // Trigger AI Coach analysis for player moves
+        if (gameMode === "PvC" && turn === playerColor) {
+          analyzeMove(move, game);
+        }
       }
     },
-    [makeMove, gameMode, turn, playerColor],
+    [makeMove, gameMode, turn, playerColor, analyzeMove, game],
   );
 
   // UseUndo
@@ -117,31 +134,32 @@ function Game() {
         "playerColor:",
         playerColor,
       );
-      const timer = setTimeout(() => {
-        import("../../lib/chess/engine")
-          .then(({ getBestMove }) => {
-            console.log("Engine loaded, computing best move...");
-            const aiMove = getBestMove(game, difficulty);
-            console.log("AI move computed:", aiMove);
-            if (
-              aiMove &&
-              typeof aiMove === "object" &&
-              "from" in aiMove &&
-              "to" in aiMove
-            ) {
-              // Pass from/to separately since makeMove expects that format
-              const executedMove = makeMove(
-                aiMove.from,
-                aiMove.to,
-                aiMove.promotion || "q",
-              );
-              console.log("Executed move:", executedMove);
-              if (executedMove) {
-                setLastMove({ from: executedMove.from, to: executedMove.to });
-              }
+      const timer = setTimeout(async () => {
+        try {
+          const { getBestMove } = await import("../../lib/chess/engine");
+          console.log("Engine loaded, computing best move...");
+          const aiMove = await getBestMove(game, difficulty);
+          console.log("AI move computed:", aiMove);
+          if (
+            aiMove &&
+            typeof aiMove === "object" &&
+            "from" in aiMove &&
+            "to" in aiMove
+          ) {
+            // Pass from/to separately since makeMove expects that format
+            const executedMove = makeMove(
+              aiMove.from,
+              aiMove.to,
+              aiMove.promotion || "q",
+            );
+            console.log("Executed move:", executedMove);
+            if (executedMove) {
+              setLastMove({ from: executedMove.from, to: executedMove.to });
             }
-          })
-          .catch((err) => console.error("Engine import error:", err));
+          }
+        } catch (err) {
+          console.error("Engine error:", err);
+        }
       }, 150); // Quick response - just enough delay to feel natural
       return () => clearTimeout(timer);
     }
@@ -209,47 +227,25 @@ function Game() {
 
   const startGame = (color: "w" | "b") => {
     setPlayerColor(color);
+    setStorePlayerColor(color);
     setColorSelect(false);
     setGameMode("PvC");
+    setStoreGameMode("PvC");
+    setStoreDifficulty(difficulty);
   };
 
-  // DIFFICULTY DATA
+  // DIFFICULTY DATA - 10 Levels with Stockfish for 6-10
   const levels = [
-    {
-      level: 1,
-      name: "Beginner",
-      description: "Random moves",
-      icon: "🌱",
-      color: "from-green-500 to-emerald-600",
-    },
-    {
-      level: 2,
-      name: "Casual",
-      description: "Basic captures",
-      icon: "🎯",
-      color: "from-blue-500 to-cyan-600",
-    },
-    {
-      level: 3,
-      name: "Intermediate",
-      description: "2-move lookahead",
-      icon: "🧠",
-      color: "from-purple-500 to-violet-600",
-    },
-    {
-      level: 4,
-      name: "Advanced",
-      description: "3-move lookahead",
-      icon: "⚔️",
-      color: "from-orange-500 to-amber-600",
-    },
-    {
-      level: 5,
-      name: "Master",
-      description: "4-move lookahead",
-      icon: "👑",
-      color: "from-red-500 to-rose-600",
-    },
+    { level: 1, name: "Beginner", description: "Random moves", icon: "🌱", color: "from-green-500 to-emerald-600" },
+    { level: 2, name: "Casual", description: "Basic captures", icon: "🎯", color: "from-teal-500 to-cyan-600" },
+    { level: 3, name: "Easy", description: "2-move lookahead", icon: "🧩", color: "from-blue-500 to-sky-600" },
+    { level: 4, name: "Medium", description: "3-move lookahead", icon: "🧠", color: "from-indigo-500 to-blue-600" },
+    { level: 5, name: "Hard", description: "4-move lookahead", icon: "⚔️", color: "from-purple-500 to-violet-600" },
+    { level: 6, name: "Expert", description: "Stockfish Depth 8", icon: "🎖️", color: "from-fuchsia-500 to-pink-600" },
+    { level: 7, name: "Master", description: "Stockfish Depth 11", icon: "🏆", color: "from-orange-500 to-amber-600" },
+    { level: 8, name: "Grandmaster", description: "Stockfish Depth 14", icon: "👑", color: "from-red-500 to-rose-600" },
+    { level: 9, name: "Super GM", description: "Stockfish Depth 17", icon: "🔥", color: "from-rose-600 to-red-700" },
+    { level: 10, name: "Maximum", description: "Full Stockfish", icon: "💀", color: "from-slate-700 to-slate-900" },
   ];
 
   // START SCREEN logic
@@ -465,16 +461,20 @@ function Game() {
           {/* Footer features */}
           <div className="flex gap-8 mt-16 text-slate-500 text-sm">
             <div className="flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-indigo-500" />
+              <span>AI Coach</span>
+            </div>
+            <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-amber-500" />
-              <span>Smart AI</span>
+              <span>Stockfish Engine</span>
             </div>
             <div className="flex items-center gap-2">
               <Swords className="w-4 h-4 text-blue-500" />
-              <span>5 Difficulty Levels</span>
+              <span>10 Difficulty Levels</span>
             </div>
             <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-purple-500" />
-              <span>Track Progress</span>
+              <BookOpen className="w-4 h-4 text-purple-500" />
+              <span>100+ Openings</span>
             </div>
           </div>
         </div>
@@ -520,6 +520,20 @@ function Game() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Coach Toggle */}
+            {gameMode === "PvC" && (
+              <button
+                onClick={() => setShowCoach(!showCoach)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-sm font-medium ${
+                  showCoach 
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-500/50 text-white' 
+                    : 'bg-slate-800/50 hover:bg-slate-700/50 border-slate-700/50'
+                }`}
+              >
+                <GraduationCap className="w-4 h-4" />
+                <span className="hidden sm:inline">Coach</span>
+              </button>
+            )}
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-800/80 to-slate-800/40 border border-slate-700/50">
               {gameMode === "PvC" ? (
                 <>
@@ -528,7 +542,7 @@ function Game() {
                     Level {difficulty}
                   </span>
                   <div className="flex gap-0.5 ml-1">
-                    {[...Array(5)].map((_, i) => (
+                    {[...Array(10)].map((_, i) => (
                       <div
                         key={i}
                         className={`w-1.5 h-1.5 rounded-full ${i < difficulty ? "bg-amber-400" : "bg-slate-700"}`}
@@ -632,8 +646,15 @@ function Game() {
             )}
           </div>
 
+          {/* AI Coach Panel - conditionally shown */}
+          {gameMode === "PvC" && showCoach && (
+            <div className="bg-slate-900/50 backdrop-blur border border-slate-800/50 rounded-2xl overflow-hidden">
+              <CoachChat />
+            </div>
+          )}
+
           {/* Move History */}
-          <div className="flex-1 bg-slate-900/50 backdrop-blur border border-slate-800/50 rounded-2xl overflow-hidden flex flex-col min-h-[300px] lg:min-h-0">
+          <div className="flex-1 bg-slate-900/50 backdrop-blur border border-slate-800/50 rounded-2xl overflow-hidden flex flex-col min-h-[200px] lg:min-h-0">
             <div className="px-5 py-4 border-b border-slate-800/50 flex items-center gap-2">
               <Clock className="w-4 h-4 text-slate-400" />
               <h3 className="font-semibold">Move History</h3>
@@ -641,7 +662,7 @@ function Game() {
                 {moveHistory.length} moves
               </span>
             </div>
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4 max-h-[200px]">
               {moveHistory.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-slate-500 text-sm">
                   No moves yet
@@ -672,6 +693,13 @@ function Game() {
               )}
             </div>
           </div>
+
+          {/* Opening Explorer - shown when coach is active */}
+          {gameMode === "PvC" && showCoach && (
+            <div className="bg-slate-900/50 backdrop-blur border border-slate-800/50 rounded-2xl overflow-hidden max-h-[300px]">
+              <OpeningSidebar />
+            </div>
+          )}
         </aside>
       </main>
 
